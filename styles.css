@@ -77,14 +77,14 @@ body.light .pt{background:rgba(80,100,200,0.3);}
   background:rgba(255,255,255,var(--el-alpha));
   backdrop-filter:blur(var(--blur-str)) saturate(160%);
   -webkit-backdrop-filter:blur(var(--blur-str)) saturate(160%);
-  border:1px solid var(--border);
+  border:none;
   border-radius:var(--radius);
-  box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow:none;
   transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s;
   position:relative;overflow:hidden;
 }
-body.light .glass{box-shadow:0 8px 32px rgba(0,0,80,0.08),inset 0 1px 0 rgba(255,255,255,0.5);}
-.glass:hover{border-color:var(--border-h);box-shadow:0 12px 48px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.12);}
+body.light .glass{box-shadow:none;}
+.glass:hover{border-color:transparent;box-shadow:none;}
 .glass::after{
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(115deg,rgba(255,255,255,0.05) 0%,transparent 60%);
@@ -153,7 +153,7 @@ body.light .glass{box-shadow:0 8px 32px rgba(0,0,80,0.08),inset 0 1px 0 rgba(255
 @keyframes shimmerAnim{from{background-position:200% center;}to{background-position:-200% center;}}
 
 .ta-glow .animated-text{animation:glowPulse 2.5s ease-in-out infinite;}
-@keyframes glowPulse{0%,100%{text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);}50%{text-shadow:0 0 20px var(--accent),0 0 40px var(--accent2),0 0 60px var(--accent4);}}
+@keyframes glowPulse{0%,100%{text-shadow:none;}50%{text-shadow:none;}}
 
 .ta-typewriter .animated-text{
   overflow:hidden;white-space:nowrap;
@@ -170,7 +170,7 @@ body.light .glass{box-shadow:0 8px 32px rgba(0,0,80,0.08),inset 0 1px 0 rgba(255
 @keyframes waveChar{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 
 .ta-neon .animated-text{color:var(--accent);animation:neonFlicker 3s infinite;}
-@keyframes neonFlicker{0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px var(--accent),0 0 10px var(--accent),0 0 20px var(--accent),0 0 40px var(--accent);}20%,24%,55%{text-shadow:none;}}
+@keyframes neonFlicker{0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:none;}20%,24%,55%{text-shadow:none;}}
 
 .ta-rainbow .animated-text{
   background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#c77dff,#ff6b6b);
