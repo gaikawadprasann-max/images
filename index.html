@@ -3,925 +3,972 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✦ Prasann's Space</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<title>Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-opacity: 0.45;
+    --icon-size: 56px;
+    --searchbar-width: 560px;
+    --theme: dark;
+    --accent: rgba(255,255,255,0.12);
+    --text: rgba(255,255,255,0.92);
+    --text-sub: rgba(255,255,255,0.55);
+    --glass: rgba(255,255,255,0.08);
+    --glass-border: rgba(255,255,255,0.15);
+    --shadow: 0 8px 32px rgba(0,0,0,0.35);
+    --bar-top: auto;
+    --bar-bottom: 36px;
+    --bar-flex: column;
+  }
+
+  body.light-theme {
+    --accent: rgba(0,0,0,0.08);
+    --text: rgba(20,20,20,0.92);
+    --text-sub: rgba(20,20,20,0.5);
+    --glass: rgba(255,255,255,0.55);
+    --glass-border: rgba(0,0,0,0.12);
+    --shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  #bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: #0a0a0f url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover no-repeat;
+    transition: opacity 0.4s;
+  }
+  #bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,var(--bg-opacity));
+    transition: background 0.4s;
+  }
+
+  body.light-theme #bg::after {
+    background: rgba(255,255,255,calc(var(--bg-opacity) * 0.7));
+  }
+
+  #app {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== BOTTOM BAR ===== */
+  #bottom-bar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: var(--bar-bottom);
+    top: var(--bar-top);
+    display: flex;
+    flex-direction: var(--bar-flex);
+    align-items: center;
+    gap: 18px;
+    z-index: 10;
+    transition: top 0.4s, bottom 0.4s;
+  }
+
+  /* ===== TIME ===== */
+  #time-block {
+    text-align: center;
+    user-select: none;
+    order: 0;
+  }
+  #time-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    line-height: 1;
+  }
+  #date-display {
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ===== SEARCH BAR ===== */
+  #search-wrap {
+    width: var(--searchbar-width);
+    order: 1;
+  }
+  #search-form {
+    display: flex;
+    align-items: center;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  #search-form:focus-within {
+    background: rgba(255,255,255,0.14);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.22);
+  }
+  body.light-theme #search-form:focus-within {
+    background: rgba(255,255,255,0.8);
+  }
+  #search-icon {
+    color: var(--text-sub);
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  #search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    caret-color: var(--text);
+  }
+  #search-input::placeholder { color: var(--text-sub); }
+
+  /* ===== SHORTCUTS ===== */
+  #shortcuts-wrap {
+    order: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 700px;
+  }
+
+  .shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1);
+    text-decoration: none;
+    user-select: none;
+  }
+  .shortcut:hover { transform: translateY(-4px) scale(1.08); }
+  .shortcut:active { transform: scale(0.95); }
+
+  .shortcut-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    border-radius: calc(var(--icon-size) * 0.22);
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+  .shortcut:hover .shortcut-icon {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.3);
+  }
+  .shortcut-icon img {
+    width: 72%; height: 72%;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .shortcut-label {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    letter-spacing: 0.03em;
+    max-width: 64px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Add shortcut button */
+  #add-shortcut-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    background: none;
+    border: none;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1);
+  }
+  #add-shortcut-btn:hover { transform: translateY(-4px) scale(1.08); }
+  .add-icon-circle {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    border-radius: calc(var(--icon-size) * 0.22);
+    background: var(--glass);
+    border: 1.5px dashed var(--glass-border);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sub);
+    font-size: 1.6rem;
+    font-weight: 300;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  #add-shortcut-btn:hover .add-icon-circle {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.3);
+    color: var(--text);
+  }
+
+  /* Settings button */
+  #settings-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px);
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-sub);
+    transition: color 0.2s, background 0.2s, transform 0.4s;
+    box-shadow: var(--shadow);
+  }
+  #settings-btn:hover { color: var(--text); background: rgba(255,255,255,0.15); transform: rotate(90deg); }
+
+  /* ===== MODAL BASE ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: rgba(18,18,24,0.96);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 28px 30px;
+    width: 380px;
+    max-width: 95vw;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    color: var(--text);
+  }
+  body.light-theme .modal {
+    background: rgba(245,245,250,0.97);
+    border-color: rgba(0,0,0,0.1);
+    color: #111;
+  }
+  .modal h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+  .modal-close {
+    float: right;
+    background: none; border: none;
+    color: var(--text-sub);
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+    margin-top: -2px;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .field-group { margin-bottom: 16px; }
+  .field-group label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .field-group input[type="text"],
+  .field-group input[type="url"],
+  .field-group input[type="range"],
+  .field-group select {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  body.light-theme .field-group input[type="text"],
+  body.light-theme .field-group input[type="url"],
+  body.light-theme .field-group select {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.15);
+    color: #111;
+  }
+  .field-group input:focus, .field-group select:focus { border-color: rgba(255,255,255,0.3); }
+  .field-group input[type="range"] { padding: 6px 0; background: none; border: none; cursor: pointer; }
+
+  .range-row { display: flex; align-items: center; gap: 10px; }
+  .range-row span { font-size: 0.8rem; min-width: 32px; text-align: right; color: var(--text-sub); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+  .btn {
+    padding: 9px 20px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: rgba(255,255,255,0.92); color: #111; font-weight: 600; }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  /* Settings modal tabs */
+  .settings-modal { width: 430px; }
+  .stabs {
+    display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .stab {
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: none;
+    color: var(--text-sub);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stab.active {
+    background: rgba(255,255,255,0.14);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .stab-content { display: none; }
+  .stab-content.active { display: block; }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .toggle-label { font-size: 0.88rem; }
+  .toggle-sub { font-size: 0.75rem; color: var(--text-sub); }
+  .toggle {
+    position: relative;
+    width: 40px; height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .toggle-slider { background: rgba(100,180,255,0.7); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+  /* Theme toggle buttons */
+  .theme-btns { display: flex; gap: 8px; }
+  .theme-btn {
+    flex: 1; padding: 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: none;
+    color: var(--text-sub);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .theme-btn.active { background: rgba(255,255,255,0.14); color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* Shortcut delete */
+  .shortcut { position: relative; }
+  .shortcut .del-btn {
+    position: absolute;
+    top: -5px; right: -5px;
+    width: 18px; height: 18px;
+    background: rgba(255,80,80,0.9);
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .edit-mode .shortcut .del-btn { display: flex; }
+  .edit-mode .shortcut { animation: wiggle 0.4s infinite alternate; }
+  @keyframes wiggle { from { transform: rotate(-1.5deg); } to { transform: rotate(1.5deg); } }
+  .edit-mode .shortcut:hover { transform: none; }
+
+  /* Position select */
+  .pos-btns { display: flex; gap: 8px; }
+  .pos-btn {
+    flex: 1; padding: 7px 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: none;
+    color: var(--text-sub);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .pos-btn.active { background: rgba(255,255,255,0.14); color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* Shortcut list in settings */
+  #shortcut-list .sc-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  #shortcut-list .sc-row img { width: 28px; height: 28px; border-radius: 6px; }
+  #shortcut-list .sc-name { flex: 1; font-size: 0.88rem; }
+  #shortcut-list .sc-del {
+    background: none; border: none;
+    color: rgba(255,100,100,0.7); cursor: pointer;
+    font-size: 0.8rem; padding: 2px 6px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  #shortcut-list .sc-del:hover { background: rgba(255,80,80,0.15); color: rgba(255,100,100,1); }
+
+  .upload-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    width: 100%;
+  }
+  .upload-btn:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.28); }
+  body.light-theme .upload-btn {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.15);
+    color: #111;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+</style>
 </head>
 <body>
 
-<div id="bg-base"></div>
-<div id="bg-img"></div>
-<div id="bg-grain"></div>
-<div id="aurora">
-  <div class="aurora-blob" style="width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,#f0a8c0,transparent 70%);animation-duration:22s;"></div>
-  <div class="aurora-blob" style="width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(circle,#88d4f5,transparent 70%);animation-duration:18s;animation-delay:-7s;"></div>
-  <div class="aurora-blob" style="width:350px;height:350px;top:40%;left:40%;background:radial-gradient(circle,#a8e6c8,transparent 70%);animation-duration:25s;animation-delay:-12s;opacity:0.08;"></div>
-</div>
-<div id="vignette"></div>
-<div id="particles"></div>
+<div id="bg"></div>
 
-<!-- FOCUS MODE -->
-<div id="focusMode">
-  <div class="focus-clock" id="focusClock">00:00</div>
-  <div class="focus-date" id="focusDate"></div>
-  <div class="focus-quote" id="focusQuote"></div>
-  <button class="btn pink focus-exit" onclick="toggleFocus()">✕ Exit Focus</button>
+<div id="app">
+  <!-- Clock shown in center if position is "center" -->
+  <div id="center-time" style="display:none; text-align:center; user-select:none;">
+    <div id="center-time-display" style="font-family:'Space Mono',monospace;font-size:3.5rem;font-weight:700;color:var(--text);letter-spacing:0.04em;text-shadow:0 2px 20px rgba(0,0,0,0.5);"></div>
+    <div id="center-date-display" style="font-size:0.85rem;color:var(--text-sub);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;"></div>
+  </div>
 </div>
 
-<div class="page">
+<!-- Bottom / Top Bar -->
+<div id="bottom-bar">
+  <div id="time-block">
+    <div id="time-display"></div>
+    <div id="date-display"></div>
+  </div>
+  <div id="search-wrap">
+    <form id="search-form" onsubmit="doSearch(event)">
+      <span id="search-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input id="search-input" type="text" placeholder="Search with Google or enter address" autocomplete="off" spellcheck="false">
+    </form>
+  </div>
+  <div id="shortcuts-wrap">
+    <!-- shortcuts injected here -->
+    <button id="add-shortcut-btn" title="Add shortcut" onclick="openAddShortcut()">
+      <div class="add-icon-circle">+</div>
+      <span class="shortcut-label" style="color:var(--text-sub)">Add</span>
+    </button>
+  </div>
+</div>
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="greeting-wrap">
-      <div class="greeting" id="greeting"></div>
-      <div class="date-line" id="dateText"></div>
-      <div class="quote-bar" id="quoteStrip"></div>
+<!-- Settings button -->
+<button id="settings-btn" onclick="openSettings()" title="Settings">
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+  </svg>
+</button>
+
+<!-- ADD SHORTCUT MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h2><button class="modal-close" onclick="closeModal('add-modal')">&#215;</button>Add Shortcut</h2>
+    <div class="field-group">
+      <label>Name</label>
+      <input type="text" id="sc-name" placeholder="YouTube">
     </div>
-    <div class="topbar-right">
-      <div class="glass stat-bar">
-        <div class="stat-item"><div class="stat-dot" style="background:var(--accent3)"></div><span id="habitStat">0/0 habits</span></div>
-        <div class="stat-item"><div class="stat-dot" style="background:var(--accent)"></div><span id="pomoStat">0 sessions</span></div>
-      </div>
-      <button class="btn purple" onclick="toggleFocus()">◉ Focus</button>
-      <button class="btn blue" onclick="openModal('link')">＋ Link</button>
-      <button class="btn green" onclick="openModal('habit')">＋ Habit</button>
-      <button class="btn pink" onclick="openSettings()">⚙ Settings</button>
+    <div class="field-group">
+      <label>URL</label>
+      <input type="url" id="sc-url" placeholder="https://youtube.com">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addShortcut()">Add</button>
     </div>
   </div>
+</div>
 
-  <!-- MIDDLE -->
-  <div class="middle">
-    <!-- LEFT -->
-    <div class="left-panel">
-      <div class="bookmark-row" id="bookmarks"></div>
-      <div class="glass top-sites-card">
-        <div class="card-hdr">
-          <span class="card-lbl">⚡ Pinned Sites</span>
-          <button class="btn" style="padding:3px 9px;font-size:0.58rem;" onclick="openModal('site')">＋</button>
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal settings-modal">
+    <h2><button class="modal-close" onclick="closeModal('settings-modal')">&#215;</button>Settings</h2>
+    <div class="stabs">
+      <button class="stab active" onclick="switchTab('appearance')">Appearance</button>
+      <button class="stab" onclick="switchTab('layout')">Layout</button>
+      <button class="stab" onclick="switchTab('shortcuts')">Shortcuts</button>
+      <button class="stab" onclick="switchTab('background')">Background</button>
+    </div>
+
+    <!-- APPEARANCE -->
+    <div class="stab-content active" id="tab-appearance">
+      <div class="field-group">
+        <label>Theme</label>
+        <div class="theme-btns">
+          <button class="theme-btn active" id="theme-dark-btn" onclick="setTheme('dark')">Dark</button>
+          <button class="theme-btn" id="theme-light-btn" onclick="setTheme('light')">Light</button>
         </div>
-        <div class="ts-grid" id="topSites"></div>
       </div>
-      <div class="glass habit-card">
-        <div class="card-hdr" style="flex-shrink:0;">
-          <span class="card-lbl">✓ Daily Habits</span>
-          <span style="font-size:0.58rem;" id="habitDate"></span>
+      <div class="field-group">
+        <label>Icon Size</label>
+        <div class="range-row">
+          <input type="range" id="icon-size-range" min="36" max="80" value="56" oninput="updateIconSize(this.value)">
+          <span id="icon-size-val">56px</span>
         </div>
-        <div class="habit-list" id="habitList"></div>
-        <div class="add-habit-row">
-          <input class="add-habit-input" type="text" id="habitInput" placeholder="New habit…">
-          <button class="btn green" style="padding:5px 9px;font-size:0.64rem;flex-shrink:0;" onclick="addHabit()">Add</button>
+      </div>
+      <div class="field-group">
+        <label>Search Bar Width</label>
+        <div class="range-row">
+          <input type="range" id="sb-width-range" min="300" max="800" value="560" oninput="updateSearchWidth(this.value)">
+          <span id="sb-width-val">560px</span>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT -->
-    <div class="right-panel">
-      <div class="glass clock-card">
-        <div class="clock-orb"></div>
-        <div class="clock-time" id="clock">00:00<span class="clock-ampm" id="clockAmpm">AM</span></div>
-        <span class="clock-sec" id="clockSec">00s</span>
-        <div class="clock-sub" id="clockSub"></div>
-      </div>
-      <div class="right-panel-scroll">
-        <div class="glass wx-card" id="wxCard" onclick="openSettings()">
-          <div class="wx-icon" id="wxIcon">⛅</div>
-          <div class="wx-detail">
-            <div class="wx-temp" id="wxTemp">—°</div>
-            <div class="wx-city" id="wxCity">Set city in Settings</div>
-            <div class="wx-desc" id="wxDesc"></div>
-            <div class="wx-feels" id="wxFeels"></div>
-          </div>
-        </div>
-        <div class="glass cdown-card" id="cdownCard" onclick="openModal('countdown')">
-          <div class="card-hdr" style="margin-bottom:6px;">
-            <span class="card-lbl">⏳ Countdown</span>
-            <button class="btn" style="padding:2px 8px;font-size:0.56rem;" onclick="event.stopPropagation();openModal('countdown')">Set</button>
-          </div>
-          <div class="cdown-inner">
-            <div class="cdown-unit"><div class="cdown-num" id="cdownD">--</div><div class="cdown-lbl">days</div></div>
-            <div class="cdown-unit"><div class="cdown-num" id="cdownH">--</div><div class="cdown-lbl">hrs</div></div>
-            <div class="cdown-unit"><div class="cdown-num" id="cdownM">--</div><div class="cdown-lbl">min</div></div>
-            <div class="cdown-unit"><div class="cdown-num" id="cdownS">--</div><div class="cdown-lbl">sec</div></div>
-          </div>
-          <div class="cdown-event" id="cdownLabel">Set a countdown event</div>
-        </div>
-        <div class="glass pomo-card">
-          <div class="pomo-header">
-            <span class="card-lbl">🍅 Focus Timer</span>
-            <span id="pomoStatus">Paused</span>
-          </div>
-          <div class="pomo-tabs">
-            <div class="pomo-tab active" id="pomoTabFocus" onclick="setPomoMode('focus')">Focus</div>
-            <div class="pomo-tab" id="pomoTabShort" onclick="setPomoMode('short')">Short</div>
-            <div class="pomo-tab" id="pomoTabLong" onclick="setPomoMode('long')">Long</div>
-          </div>
-          <div class="pomo-ring-wrap">
-            <svg class="pomo-ring" viewBox="0 0 76 76">
-              <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
-              <circle id="pomoArc" cx="38" cy="38" r="32" fill="none" stroke="var(--accent)" stroke-width="4"
-                stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="0"
-                transform="rotate(-90 38 38)" style="transition:stroke-dashoffset 0.5s linear,stroke 0.5s;"/>
-            </svg>
-            <div class="pomo-ring-time" id="pomoTime">25:00</div>
-          </div>
-          <div class="pomo-controls">
-            <button class="pomo-btn" onclick="resetPomo()">↺</button>
-            <button class="pomo-btn primary" id="pomoStartBtn" onclick="togglePomo()">▶ Start</button>
-            <button class="pomo-btn" onclick="skipPomo()">⏭</button>
-          </div>
-          <div class="pomo-sessions" id="pomoSessions">Sessions: 0</div>
-        </div>
-        <div class="glass notes-card">
-          <div class="card-hdr" style="margin-bottom:4px;flex-shrink:0;">
-            <span class="card-lbl">✦ Notes</span>
-          </div>
-          <div class="notes-tabs" id="notesTabs"></div>
-          <textarea class="notes-area" id="notes" placeholder="Drop a thought…" rows="5"></textarea>
-          <div class="notes-footer">
-            <span class="notes-count" id="notesCount">0 chars</span>
-            <span class="notes-save" id="notesSave">auto-saved</span>
-          </div>
+    <!-- LAYOUT -->
+    <div class="stab-content" id="tab-layout">
+      <div class="field-group">
+        <label>Bar Position</label>
+        <div class="pos-btns">
+          <button class="pos-btn active" id="pos-bottom-btn" onclick="setPosition('bottom')">Bottom</button>
+          <button class="pos-btn" id="pos-top-btn" onclick="setPosition('top')">Top</button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM -->
-  <div class="bottom-section">
-    <div>
-      <div class="ql-header">
-        <span class="ql-lbl">⚡ Quick Access</span>
-        <button class="btn" style="padding:3px 10px;font-size:0.58rem;" onclick="openModal('link')">＋ Add</button>
-      </div>
-      <div class="quick-links" id="quickLinks"></div>
-    </div>
-    <div class="search-row">
-      <form class="glass search-bar" onsubmit="doSearch(event)">
-        <span class="s-icon">⌕</span>
-        <input type="text" id="searchInput" placeholder="Search or type a URL… (Ctrl+K)" autocomplete="off"/>
-        <select class="engine-sel" id="engineSelect">
-          <option value="https://www.google.com/search?q=">Google</option>
-          <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
-          <option value="https://www.bing.com/search?q=">Bing</option>
-          <option value="https://search.brave.com/search?q=">Brave</option>
-          <option value="https://www.perplexity.ai/search?q=">Perplexity</option>
-          <option value="https://www.youtube.com/results?search_query=">YouTube</option>
+      <div class="field-group">
+        <label>Order: Time / Search / Shortcuts</label>
+        <select id="order-select" onchange="applyOrder(this.value)">
+          <option value="time-search-icons">Time → Search → Shortcuts</option>
+          <option value="search-time-icons">Search → Time → Shortcuts</option>
+          <option value="icons-search-time">Shortcuts → Search → Time</option>
+          <option value="time-icons-search">Time → Shortcuts → Search</option>
         </select>
-      </form>
-      <a class="ai-pill pink" href="https://claude.ai" target="_blank">🤖 Claude</a>
-      <a class="ai-pill blue" href="https://chat.openai.com" target="_blank">✦ ChatGPT</a>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- TOAST -->
-<div id="toast"></div>
-
-<!-- SETTINGS PANEL -->
-<div id="sOverlay" onclick="closeSettings()"></div>
-<div id="sPanel">
-  <div class="s-title">✦ Customize</div>
-
-  <div class="s-section">
-    <span class="s-lbl">🌓 Theme</span>
-    <div class="theme-row">
-      <div class="theme-btn active" id="themeDark" onclick="setTheme('dark')">🌙 Dark</div>
-      <div class="theme-btn" id="themeLight" onclick="setTheme('light')">☀️ Light</div>
+    <!-- SHORTCUTS -->
+    <div class="stab-content" id="tab-shortcuts">
+      <div id="shortcut-list" style="max-height:220px;overflow-y:auto;margin-bottom:12px;"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="closeModal('settings-modal'); openAddShortcut()">+ Add New Shortcut</button>
     </div>
-  </div>
-  <hr class="s-divider">
 
-  <div class="s-section">
-    <span class="s-lbl">✨ Text Animation</span>
-    <div class="ta-grid" id="taGrid">
-      <div class="ta-btn active" data-ta="shimmer" onclick="setTextAnim(this,'shimmer')">Shimmer</div>
-      <div class="ta-btn" data-ta="glow" onclick="setTextAnim(this,'glow')">Glow Pulse</div>
-      <div class="ta-btn" data-ta="float" onclick="setTextAnim(this,'float')">Float</div>
-      <div class="ta-btn" data-ta="wave" onclick="setTextAnim(this,'wave')">Wave</div>
-      <div class="ta-btn" data-ta="neon" onclick="setTextAnim(this,'neon')">Neon</div>
-      <div class="ta-btn" data-ta="rainbow" onclick="setTextAnim(this,'rainbow')">Rainbow</div>
-      <div class="ta-btn" data-ta="breathe" onclick="setTextAnim(this,'breathe')">Breathe</div>
-      <div class="ta-btn" data-ta="none" onclick="setTextAnim(this,'none')">None</div>
-    </div>
-    <label style="font-size:0.62rem;color:rgba(255,255,255,0.65);display:block;margin-bottom:3px;">Animation Speed</label>
-    <input type="range" class="s-slider" id="taSpeedSlider" min="1" max="10" value="4" oninput="onTaSpeed(this)">
-    <span class="s-val" id="taSpeedVal">0.4s</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">🖼 Background Image</span>
-    <label class="s-file-lbl" for="bgFile" id="bgFileLbl">Click to upload (max 5MB)</label>
-    <input type="file" id="bgFile" accept="image/*" style="display:none" onchange="handleBgUpload(this)">
-    <input class="s-input" type="text" id="bgUrl" placeholder="…or paste image URL">
-    <button class="btn pink wide" onclick="applyBg()">Apply Background</button>
-    <button class="btn wide" style="opacity:0.45;" onclick="clearBg()">✕ Remove</button>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Background Opacity</span>
-    <input type="range" class="s-slider" id="bgOpSlider" min="0" max="100" value="100" oninput="onBgOp(this)">
-    <span class="s-val" id="bgOpVal">100%</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Element Transparency</span>
-    <input type="range" class="s-slider" id="elAlphaSlider" min="3" max="40" value="13" oninput="onElAlpha(this)">
-    <span class="s-val" id="elAlphaVal">13%</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Glass Blur</span>
-    <div class="s-toggle" id="blurToggle" onclick="toggleBlur()">
-      <div class="t-dot"></div><span>Enable glass blur</span>
-    </div>
-    <div id="blurWrap" style="display:none">
-      <input type="range" class="s-slider" id="blurSlider" min="0" max="40" value="18" oninput="onBlur(this)">
-      <span class="s-val" id="blurVal">18px</span>
-    </div>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Aurora Intensity</span>
-    <input type="range" class="s-slider" id="auroraSlider" min="0" max="30" value="12" oninput="onAurora(this)">
-    <span class="s-val" id="auroraVal">12%</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">• Particles</span>
-    <input type="range" class="s-slider" id="ptSlider" min="0" max="80" value="20" oninput="onParticles(this)">
-    <span class="s-val" id="ptVal">20</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">⛅ Weather City</span>
-    <input class="s-input" type="text" id="wxCityInput" placeholder="e.g. Bengaluru">
-    <button class="btn blue wide" onclick="fetchWeather()">Fetch Weather</button>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Accent Color</span>
-    <div class="swatch-row" id="swatchRow">
-      <div class="swatch active" data-c="#f0a8c0" style="background:#f0a8c0" onclick="setAccent(this)"></div>
-      <div class="swatch" data-c="#88d4f5" style="background:#88d4f5" onclick="setAccent(this)"></div>
-      <div class="swatch" data-c="#a8e6c8" style="background:#a8e6c8" onclick="setAccent(this)"></div>
-      <div class="swatch" data-c="#d4a8f0" style="background:#d4a8f0" onclick="setAccent(this)"></div>
-      <div class="swatch" data-c="#f5d488" style="background:#f5d488" onclick="setAccent(this)"></div>
-      <div class="swatch" data-c="#f0a888" style="background:#f0a888" onclick="setAccent(this)"></div>
-      <input type="color" id="accentPicker" style="width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);cursor:pointer;padding:0;" onchange="setAccentCustom(this)">
-    </div>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">🍅 Pomodoro (minutes)</span>
-    <label style="font-size:0.62rem;color:rgba(255,255,255,0.65);display:block;margin-bottom:3px;">Focus</label>
-    <input type="range" class="s-slider" id="pomoFSlider" min="5" max="60" value="25" oninput="onPomoF(this)">
-    <span class="s-val" id="pomoFVal">25m</span>
-    <label style="font-size:0.62rem;color:rgba(255,255,255,0.65);display:block;margin-bottom:3px;">Short Break</label>
-    <input type="range" class="s-slider" id="pomoSSlider" min="1" max="15" value="5" oninput="onPomoS(this)">
-    <span class="s-val" id="pomoSVal">5m</span>
-    <label style="font-size:0.62rem;color:rgba(255,255,255,0.65);display:block;margin-bottom:3px;">Long Break</label>
-    <input type="range" class="s-slider" id="pomoLSlider" min="5" max="30" value="15" oninput="onPomoL(this)">
-    <span class="s-val" id="pomoLVal">15m</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Quote Speed (seconds)</span>
-    <input type="range" class="s-slider" id="qIntSlider" min="5" max="60" value="15" oninput="onQInt(this)">
-    <span class="s-val" id="qIntVal">15s</span>
-  </div>
-  <hr class="s-divider">
-
-  <div class="s-section">
-    <span class="s-lbl">Name in Greeting</span>
-    <input class="s-input" type="text" id="greetName" placeholder="Prasann">
-    <button class="btn blue wide" onclick="saveGreetName()">Save</button>
-  </div>
-  <hr class="s-divider">
-
-  <button class="btn wide" style="opacity:0.4;" onclick="resetAll()">↺ Reset Everything</button>
-</div>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="linkModal">
-  <div class="modal">
-    <h2>✦ Add Quick Link</h2>
-    <label>Name</label><input type="text" id="newName" placeholder="YouTube">
-    <label>URL</label><input type="text" id="newUrl" placeholder="https://youtube.com">
-    <label>Emoji</label><input type="text" id="newIcon" placeholder="▶">
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('link')">Cancel</button>
-      <button class="btn pink" onclick="addLink()">Add ✦</button>
-    </div>
-  </div>
-</div>
-<div class="modal-overlay" id="habitModal">
-  <div class="modal">
-    <h2>✦ Add Daily Habit</h2>
-    <label>Habit Name</label><input type="text" id="habitModalName" placeholder="Morning workout">
-    <label>Emoji</label><input type="text" id="habitModalIcon" placeholder="💪">
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('habit')">Cancel</button>
-      <button class="btn green" onclick="addHabitModal()">Add ✦</button>
-    </div>
-  </div>
-</div>
-<div class="modal-overlay" id="siteModal">
-  <div class="modal">
-    <h2>✦ Add Pinned Site</h2>
-    <label>Name</label><input type="text" id="siteName" placeholder="GitHub">
-    <label>URL</label><input type="text" id="siteUrl" placeholder="https://github.com">
-    <label>Emoji</label><input type="text" id="siteIcon" placeholder="🐙">
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('site')">Cancel</button>
-      <button class="btn blue" onclick="addSite()">Add ✦</button>
-    </div>
-  </div>
-</div>
-<div class="modal-overlay" id="countdownModal">
-  <div class="modal">
-    <h2>✦ Countdown Timer</h2>
-    <label>Event Name</label><input type="text" id="cdownName" placeholder="My Birthday">
-    <label>Target Date</label><input type="text" id="cdownDate" placeholder="2025-12-31">
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('countdown')">Cancel</button>
-      <button class="btn purple" onclick="setCountdown()">Set ✦</button>
+    <!-- BACKGROUND -->
+    <div class="stab-content" id="tab-background">
+      <div class="field-group">
+        <label>Upload from Device</label>
+        <label class="upload-btn" for="bg-file-input">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Choose Image from Device
+        </label>
+        <input type="file" id="bg-file-input" accept="image/*" style="display:none" onchange="applyDeviceBg(event)">
+      </div>
+      <div class="field-group">
+        <label>Custom Image URL</label>
+        <input type="url" id="bg-url-input" placeholder="https://...">
+      </div>
+      <div class="btn-row" style="margin-top:8px;margin-bottom:16px;justify-content:flex-start;">
+        <button class="btn btn-primary" onclick="applyBgUrl()">Apply</button>
+        <button class="btn btn-secondary" onclick="resetBg()">Reset Default</button>
+      </div>
+      <div class="field-group">
+        <label>Background Overlay Opacity</label>
+        <div class="range-row">
+          <input type="range" id="opacity-range" min="0" max="0.85" step="0.01" value="0.45" oninput="updateOpacity(this.value)">
+          <span id="opacity-val">45%</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ═══ DATA ═══ */
-const MOTIVATIONS = [
-  "Show up even when it sucks",
-  "Nobody is coming to save you",
-  "One hour a day changes everything",
-  "Pain now or regret forever",
-  "You're closer than you think",
-  "Skill beats luck every time",
-  "Earn the confidence",
-  "Silent work, loud results",
-  "Do the boring work brilliantly",
-  "Become undeniable",
-  "Today's effort is tomorrow's advantage",
-  "Progress is built quietly",
-  "No shortcuts. No excuses. Only growth.",
-  "The gap between who you are and who you want to be is what you do daily",
-  "Discipline is choosing between what you want now and what you want most"
-];
-
-let GREETINGS_POOL = [
-  "Hey Prasann, look who finally showed up.",
-  "Good morning, trouble. I was wondering when you'd appear.",
-  "Hey you. Yeah you. Don't act surprised, I was waiting.",
-  "Well well, there you are. My day just upgraded.",
-  "Hey Prasann. Come here. I missed you more than I'm admitting.",
-  "Look alive. I'm here and I've got my eyes on you.",
-  "Hey. Don't scroll past me like that."
-];
-
-const DEF_LINKS = [
-  {icon:'▶',label:'YouTube',url:'https://youtube.com'},
-  {icon:'𝕏',label:'Twitter',url:'https://twitter.com'},
-  {icon:'🐙',label:'GitHub',url:'https://github.com'},
-  {icon:'📧',label:'Gmail',url:'https://mail.google.com'},
-  {icon:'📰',label:'Reddit',url:'https://reddit.com'},
-  {icon:'🤖',label:'Claude',url:'https://claude.ai'},
-  {icon:'🎵',label:'Spotify',url:'https://spotify.com'},
-  {icon:'💬',label:'Discord',url:'https://discord.com'},
-];
-
-const DEF_SITES = [
-  {icon:'📧',label:'Gmail',url:'https://mail.google.com'},
-  {icon:'📰',label:'Reddit',url:'https://reddit.com'},
-  {icon:'🐙',label:'GitHub',url:'https://github.com'},
-  {icon:'🔥',label:'HN',url:'https://news.ycombinator.com'},
-  {icon:'▶',label:'YouTube',url:'https://youtube.com'},
-  {icon:'💬',label:'Discord',url:'https://discord.com'},
-  {icon:'🎵',label:'Spotify',url:'https://spotify.com'},
-  {icon:'🌐',label:'Wikipedia',url:'https://wikipedia.org'},
-];
-
-const DEF_BOOKMARKS = [
-  {icon:'🔥',label:'Hacker News',url:'https://news.ycombinator.com'},
-  {icon:'🌐',label:'Wikipedia',url:'https://wikipedia.org'},
-];
-
-const DEF_HABITS = [
-  {id:1,icon:'💧',name:'Drink water',streak:0},
-  {id:2,icon:'📚',name:'Read 30 min',streak:0},
-  {id:3,icon:'🏃',name:'Exercise',streak:0},
-];
-
-/* ═══ STATE ═══ */
-function todayStr(){return new Date().toISOString().slice(0,10);}
-
-let links     = JSON.parse(ls('hp3_links')  ||'null') || DEF_LINKS;
-let topSites  = JSON.parse(ls('hp3_top')    ||'null') || DEF_SITES;
-let bookmarks = JSON.parse(ls('hp3_bmarks') ||'null') || DEF_BOOKMARKS;
-let habits    = JSON.parse(ls('hp3_habits') ||'null') || DEF_HABITS;
-let habitDone = JSON.parse(ls('hp3_hdone_'+todayStr())||'{}');
-let notePages = JSON.parse(ls('hp3_notes')  ||'null') || ['','',''];
-let activeNote = 0;
-let bgData = ls('hp3_bg') || '';
-
-let cfg = {
-  bgOp:100, elAlpha:13, blurOn:true, blurStr:18,
-  particles:20, qInt:15,
-  wxCity:'', accent:'#f0a8c0',
-  pomoF:25, pomoS:5, pomoL:15,
-  aurora:12, greetName:'Prasann',
-  countdown:null, theme:'dark',
-  textAnim:'shimmer', taSpeed:0.4
+// ===== STATE =====
+let state = {
+  shortcuts: [
+    { name: 'YouTube', url: 'https://youtube.com', favicon: 'https://www.youtube.com/favicon.ico' },
+    { name: 'WhatsApp', url: 'https://web.whatsapp.com', favicon: 'https://web.whatsapp.com/favicon.ico' },
+    { name: 'LinkedIn', url: 'https://linkedin.com', favicon: 'https://linkedin.com/favicon.ico' },
+    { name: 'ChatGPT', url: 'https://chat.openai.com', favicon: 'https://chat.openai.com/favicon.ico' },
+    { name: 'Instagram', url: 'https://instagram.com', favicon: 'https://instagram.com/favicon.ico' },
+  ],
+  theme: 'dark',
+  iconSize: 56,
+  searchWidth: 560,
+  bgUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
+  bgOpacity: 0.45,
+  position: 'bottom',
+  order: 'time-search-icons',
 };
-try{Object.assign(cfg, JSON.parse(ls('hp3_cfg')||'{}'));}catch(e){}
 
-function ls(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function ss(k,v){try{localStorage.setItem(k,v);}catch(e){}};
-function saveCfg(){ss('hp3_cfg',JSON.stringify(cfg));}
-
-/* ═══ TOAST ═══ */
-let toastT;
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2000);
+function loadState() {
+  try {
+    const s = localStorage.getItem('hpState');
+    if (s) Object.assign(state, JSON.parse(s));
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('hpState', JSON.stringify(state)); } catch(e) {}
 }
 
-/* ═══ THEME ═══ */
-function setTheme(t){
-  cfg.theme=t;
-  if(t==='light'){document.body.classList.add('light');document.getElementById('themeDark').classList.remove('active');document.getElementById('themeLight').classList.add('active');}
-  else{document.body.classList.remove('light');document.getElementById('themeDark').classList.add('active');document.getElementById('themeLight').classList.remove('active');}
-  saveCfg();showToast(t==='light'?'Light mode on!':'Dark mode on!');
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}`;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const date = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+  document.getElementById('time-display').textContent = time;
+  document.getElementById('date-display').textContent = date;
+  document.getElementById('center-time-display').textContent = time;
+  document.getElementById('center-date-display').textContent = date;
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ═══ TEXT ANIMATIONS ═══ */
-function setTextAnim(el,type){
-  cfg.textAnim=type;
-  document.querySelectorAll('.ta-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  applyTextAnim();saveCfg();
-}
-
-function applyTextAnim(){
-  const body=document.body;
-  ['shimmer','glow','float','wave','neon','rainbow','breathe','none'].forEach(t=>body.classList.remove('ta-'+t));
-  body.classList.add('ta-'+cfg.textAnim);
-  const greetEl=document.getElementById('greeting');
-  if(cfg.textAnim==='wave'){
-    const em=greetEl.querySelector('em');
-    if(em){
-      const text=em.textContent;
-      em.innerHTML=text.split('').map((c,i)=>c===' '?'&nbsp;':`<span class="wave-char" style="animation-delay:${i*0.07}s">${c}</span>`).join('');
-    }
-  } else {
-    const em=greetEl.querySelector('em');
-    if(em&&em.querySelector('.wave-char')){let str='';em.querySelectorAll('.wave-char').forEach(s=>str+=s.textContent);em.innerHTML=str;}
-    if(em) em.classList.add('animated-text');
-  }
-  const quote=document.getElementById('quoteStrip');
-  quote.classList.remove('animated-text');
-  if(cfg.textAnim!=='wave') quote.classList.add('animated-text');
-  const fc=document.getElementById('focusClock');
-  if(fc) fc.classList.toggle('animated-text',cfg.textAnim!=='wave');
-}
-
-function onTaSpeed(el){
-  const v=+el.value;const speed=(v/10).toFixed(1);cfg.taSpeed=+speed;
-  el.style.setProperty('--pct',(v/10)*100+'%');
-  document.getElementById('taSpeedVal').textContent=speed+'s';
-  document.documentElement.style.setProperty('--ta-speed',speed+'s');
-  updateAnimSpeeds(speed);saveCfg();
-}
-
-function updateAnimSpeeds(speed){
-  let st=document.getElementById('dynamic-anim-speeds');
-  if(!st){st=document.createElement('style');st.id='dynamic-anim-speeds';document.head.appendChild(st);}
-  const s=parseFloat(speed);
-  st.textContent=`
-    .ta-shimmer .animated-text{animation-duration:${s*7.5}s;}
-    .ta-glow .animated-text{animation-duration:${s*6.25}s;}
-    .ta-float .animated-text{animation-duration:${s*7.5}s;}
-    .ta-neon .animated-text{animation-duration:${s*7.5}s;}
-    .ta-rainbow .animated-text{animation-duration:${s*10}s;}
-    .ta-breathe .animated-text{animation-duration:${s*10}s;}
-    .ta-wave .wave-char{animation-duration:${s*3.75}s;}
-  `;
-}
-
-/* ═══ APPLY CONFIG ═══ */
-function applyAll(){
-  const r=document.documentElement.style;
-  r.setProperty('--bg-opacity',cfg.bgOp/100);
-  r.setProperty('--el-alpha',cfg.elAlpha/100);
-  r.setProperty('--blur-str',cfg.blurOn?cfg.blurStr+'px':'0px');
-  r.setProperty('--accent',cfg.accent);
-
-  setSlider('bgOpSlider','bgOpVal',cfg.bgOp,'%',0,100);
-  setSlider('elAlphaSlider','elAlphaVal',cfg.elAlpha,'%',3,40);
-  setSlider('blurSlider','blurVal',cfg.blurStr,'px',0,40);
-  setSlider('qIntSlider','qIntVal',cfg.qInt,'s',5,60);
-  setSlider('ptSlider','ptVal',cfg.particles,'',0,80);
-  setSlider('pomoFSlider','pomoFVal',cfg.pomoF,'m',5,60);
-  setSlider('pomoSSlider','pomoSVal',cfg.pomoS,'m',1,15);
-  setSlider('pomoLSlider','pomoLVal',cfg.pomoL,'m',5,30);
-  setSlider('auroraSlider','auroraVal',cfg.aurora,'%',0,30);
-
-  const taSpeed=cfg.taSpeed||0.4;
-  const taSlider=document.getElementById('taSpeedSlider');
-  if(taSlider){const v=taSpeed*10;taSlider.value=v;taSlider.style.setProperty('--pct',(v/10)*100+'%');document.getElementById('taSpeedVal').textContent=taSpeed+'s';}
-  r.setProperty('--ta-speed',taSpeed+'s');
-  updateAnimSpeeds(taSpeed);
-
-  const bt=document.getElementById('blurToggle'),bw=document.getElementById('blurWrap');
-  cfg.blurOn?bt.classList.add('active'):bt.classList.remove('active');
-  bw.style.display=cfg.blurOn?'block':'none';
-
-  initParticles(cfg.particles);
-  applyAurora(cfg.aurora);
-  applyBackground(bgData);
-
-  const gi=document.getElementById('greetName');
-  if(gi) gi.value=cfg.greetName||'Prasann';
-  if(cfg.wxCity) document.getElementById('wxCityInput').value=cfg.wxCity;
-
-  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.c===cfg.accent));
-  const ap=document.getElementById('accentPicker');
-  if(ap) ap.value=cfg.accent||'#f0a8c0';
-
-  if(cfg.theme) setTheme(cfg.theme);
-  if(cfg.textAnim){document.querySelectorAll('.ta-btn').forEach(b=>b.classList.toggle('active',b.dataset.ta===cfg.textAnim));}
-  if(cfg.countdown) renderCountdown();
-}
-
-function setSlider(id,valId,val,unit,min,max){
-  const el=document.getElementById(id),vl=document.getElementById(valId);
-  if(!el)return;el.value=val;
-  const pct=((val-min)/(max-min))*100;
-  el.style.setProperty('--pct',pct+'%');
-  if(vl) vl.textContent=val+unit;
-}
-
-/* ═══ SLIDER HANDLERS ═══ */
-function onBgOp(el){cfg.bgOp=+el.value;el.style.setProperty('--pct',cfg.bgOp+'%');document.getElementById('bgOpVal').textContent=cfg.bgOp+'%';document.documentElement.style.setProperty('--bg-opacity',cfg.bgOp/100);saveCfg();}
-function onElAlpha(el){cfg.elAlpha=+el.value;const pct=((cfg.elAlpha-3)/37)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('elAlphaVal').textContent=cfg.elAlpha+'%';document.documentElement.style.setProperty('--el-alpha',cfg.elAlpha/100);saveCfg();}
-function toggleBlur(){cfg.blurOn=!cfg.blurOn;applyAll();saveCfg();}
-function onBlur(el){cfg.blurStr=+el.value;const pct=(cfg.blurStr/40)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('blurVal').textContent=cfg.blurStr+'px';document.documentElement.style.setProperty('--blur-str',cfg.blurStr+'px');saveCfg();}
-function onQInt(el){cfg.qInt=+el.value;const pct=((cfg.qInt-5)/55)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('qIntVal').textContent=cfg.qInt+'s';saveCfg();restartQuotes();}
-function onParticles(el){cfg.particles=+el.value;el.style.setProperty('--pct',(cfg.particles/80)*100+'%');document.getElementById('ptVal').textContent=cfg.particles;initParticles(cfg.particles);saveCfg();}
-function onAurora(el){cfg.aurora=+el.value;const pct=(cfg.aurora/30)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('auroraVal').textContent=cfg.aurora+'%';applyAurora(cfg.aurora);saveCfg();}
-function onPomoF(el){cfg.pomoF=+el.value;const pct=((cfg.pomoF-5)/55)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('pomoFVal').textContent=cfg.pomoF+'m';saveCfg();if(pomoMode==='focus'&&!pomoRunning)resetPomo();}
-function onPomoS(el){cfg.pomoS=+el.value;const pct=((cfg.pomoS-1)/14)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('pomoSVal').textContent=cfg.pomoS+'m';saveCfg();if(pomoMode==='short'&&!pomoRunning)resetPomo();}
-function onPomoL(el){cfg.pomoL=+el.value;const pct=((cfg.pomoL-5)/25)*100;el.style.setProperty('--pct',pct+'%');document.getElementById('pomoLVal').textContent=cfg.pomoL+'m';saveCfg();if(pomoMode==='long'&&!pomoRunning)resetPomo();}
-function resetAll(){if(!confirm('Reset everything?'))return;try{localStorage.clear();}catch(e){}location.reload();}
-function saveGreetName(){const v=document.getElementById('greetName').value.trim();if(v){cfg.greetName=v;saveCfg();setGreeting();showToast('Name saved!');}}
-
-function setAccent(el){cfg.accent=el.dataset.c;document.documentElement.style.setProperty('--accent',cfg.accent);document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');saveCfg();}
-function setAccentCustom(el){cfg.accent=el.value;document.documentElement.style.setProperty('--accent',cfg.accent);document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));saveCfg();}
-
-/* ═══ SETTINGS ═══ */
-function openSettings(){document.getElementById('sPanel').classList.add('open');document.getElementById('sOverlay').classList.add('open');}
-function closeSettings(){document.getElementById('sPanel').classList.remove('open');document.getElementById('sOverlay').classList.remove('open');}
-
-/* ═══ BACKGROUND ═══ */
-function applyBackground(src){const el=document.getElementById('bg-img');if(!el)return;el.style.backgroundImage=src?`url('${src}')`:'none';}
-if(bgData) applyBackground(bgData);
-
-function handleBgUpload(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>5242880){alert('Max 5MB');input.value='';return;}
-  document.getElementById('bgFileLbl').textContent='⏳ Loading…';
-  const r=new FileReader();
-  r.onload=e=>{bgData=e.target.result;document.getElementById('bgFileLbl').textContent='✓ '+file.name;document.getElementById('bgUrl').value='';};
-  r.readAsDataURL(file);
-}
-function applyBg(){const urlVal=document.getElementById('bgUrl').value.trim();const src=urlVal||bgData;if(!src){alert('Upload or enter URL');return;}try{ss('hp3_bg',src);}catch(e){}applyBackground(src);showToast('Background applied!');}
-function clearBg(){bgData='';try{localStorage.removeItem('hp3_bg');}catch(e){}applyBackground('');document.getElementById('bgFileLbl').textContent='Click to upload';document.getElementById('bgUrl').value='';showToast('Background cleared.');}
-
-/* ═══ AURORA ═══ */
-function applyAurora(v){document.querySelectorAll('.aurora-blob').forEach(b=>{b.style.opacity=v/100;});}
-
-/* ═══ CLOCK ═══ */
-function updateClock(){
-  const n=new Date();
-  let h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
-  const ap=h>=12?'PM':'AM';h=h%12||12;
-  document.getElementById('clock').innerHTML=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}<span class="clock-ampm">${ap}</span>`;
-  document.getElementById('clockSec').textContent=String(s).padStart(2,'0')+'s';
-  document.getElementById('clockSub').textContent=n.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  const fc=document.getElementById('focusClock');
-  if(fc) fc.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-}
-updateClock();setInterval(updateClock,1000);
-
-/* ═══ GREETING ═══ */
-function setGreeting(){
-  const name=cfg.greetName||'Prasann';
-  const msgs=GREETINGS_POOL.map(g=>g.replace('Prasann',name));
-  const msg=msgs[Math.floor(Math.random()*msgs.length)];
-  const el=document.getElementById('greeting');
-  el.innerHTML=`<em class="animated-text">${msg}</em>`;
-  document.getElementById('dateText').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('focusDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  setTimeout(applyTextAnim,50);
-}
-
-/* ═══ QUOTES ═══ */
-let quoteTimer;
-function showQuote(){
-  const el=document.getElementById('quoteStrip'),fq=document.getElementById('focusQuote');
-  const q=MOTIVATIONS[Math.floor(Math.random()*MOTIVATIONS.length)];
-  el.classList.remove('qfade');void el.offsetWidth;
-  el.textContent=q;el.style.opacity='1';el.classList.add('qfade');
-  if(fq) fq.textContent=q;
-}
-function restartQuotes(){clearInterval(quoteTimer);showQuote();quoteTimer=setInterval(showQuote,cfg.qInt*1000);}
-
-/* ═══ SEARCH ═══ */
-function doSearch(e){
+// ===== SEARCH =====
+function doSearch(e) {
   e.preventDefault();
-  const q=document.getElementById('searchInput').value.trim();if(!q)return;
-  const engine=document.getElementById('engineSelect').value;
-  location.href=q.match(/^https?:\/\//)?q:engine+encodeURIComponent(q);
+  const q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  const url = q.startsWith('http') || q.includes('.') && !q.includes(' ')
+    ? (q.startsWith('http') ? q : 'https://'+q)
+    : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+  window.location.href = url;
 }
 
-/* ═══ QUICK LINKS ═══ */
-function renderLinks(){
-  const c=document.getElementById('quickLinks');
-  c.innerHTML=links.map((l,i)=>`
-    <a class="ql-item" href="${l.url}" title="${l.label}">
-      <span class="ql-icon">${l.icon}</span>
-      <span class="ql-lbl-s">${l.label}</span>
-      <button class="ql-del" onclick="rmLink(event,${i})">✕</button>
-    </a>`).join('')+
-    `<div class="ql-item ql-add" onclick="openModal('link')">
-      <span class="ql-icon" style="opacity:.3">＋</span>
-      <span class="ql-lbl-s">Add</span>
-    </div>`;
-  c.querySelectorAll('.ql-item:not(.ql-add)').forEach(el=>{
-    const d=el.querySelector('.ql-del');
-    el.addEventListener('mouseenter',()=>d&&(d.style.display='flex'));
-    el.addEventListener('mouseleave',()=>d&&(d.style.display='none'));
+// ===== RENDER SHORTCUTS =====
+// Priority: clearbit logo API (high quality) → google favicon API (fallback) → letter fallback
+function getBestFavicon(url) {
+  try {
+    const u = new URL(url.startsWith('http') ? url : 'https://'+url);
+    // Clearbit gives full-color high-res logos
+    return `https://logo.clearbit.com/${u.hostname}`;
+  } catch(e) { return ''; }
+}
+function getGoogleFavicon(url) {
+  try {
+    const u = new URL(url.startsWith('http') ? url : 'https://'+url);
+    return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=128`;
+  } catch(e) { return ''; }
+}
+function getFavicon(url) { return getBestFavicon(url); }
+
+function renderShortcuts() {
+  const wrap = document.getElementById('shortcuts-wrap');
+  const addBtn = document.getElementById('add-shortcut-btn');
+  // Remove old shortcuts
+  wrap.querySelectorAll('.shortcut').forEach(el => el.remove());
+
+  state.shortcuts.forEach((sc, i) => {
+    const a = document.createElement('a');
+    a.className = 'shortcut';
+    a.href = sc.url;
+    a.title = sc.name;
+    const primaryIcon = getBestFavicon(sc.url);
+    const fallbackIcon = getGoogleFavicon(sc.url);
+    const letterFallback = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='rgba(255,255,255,0.18)'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='22' font-weight='bold' fill='white' font-family='sans-serif'>${encodeURIComponent(sc.name[0].toUpperCase())}</text></svg>`;
+    const img = document.createElement('img');
+    img.src = primaryIcon;
+    img.alt = sc.name;
+    // fallback chain: clearbit → google → letter
+    img.onerror = function() {
+      if (this.src !== fallbackIcon) { this.src = fallbackIcon; }
+      else { this.src = letterFallback; this.onerror = null; }
+    };
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'shortcut-icon';
+    iconDiv.appendChild(img);
+    const label = document.createElement('span');
+    label.className = 'shortcut-label';
+    label.textContent = sc.name;
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del-btn';
+    delBtn.innerHTML = '&#215;';
+    delBtn.onclick = (e) => deleteShortcut(e, i);
+    a.appendChild(iconDiv);
+    a.appendChild(label);
+    a.appendChild(delBtn);
+    wrap.insertBefore(a, addBtn);
+  });
+
+  renderShortcutList();
+}
+
+function renderShortcutList() {
+  const list = document.getElementById('shortcut-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (state.shortcuts.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-sub);font-size:0.85rem;text-align:center;padding:20px">No shortcuts yet</p>';
+    return;
+  }
+  state.shortcuts.forEach((sc, i) => {
+    const row = document.createElement('div');
+    row.className = 'sc-row';
+    const img = document.createElement('img');
+    img.src = getBestFavicon(sc.url);
+    const fb = getGoogleFavicon(sc.url);
+    img.onerror = function() { if(this.src !== fb) this.src = fb; else this.style.display='none'; };
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'sc-name';
+    nameSpan.textContent = sc.name;
+    const delBtn = document.createElement('button');
+    delBtn.className = 'sc-del';
+    delBtn.textContent = 'Remove';
+    delBtn.onclick = () => deleteShortcut2(i);
+    row.appendChild(img); row.appendChild(nameSpan); row.appendChild(delBtn);
+    list.appendChild(row);
   });
 }
-function rmLink(e,i){e.preventDefault();e.stopPropagation();links.splice(i,1);ss('hp3_links',JSON.stringify(links));renderLinks();showToast('Removed.');}
-function addLink(){
-  const name=document.getElementById('newName').value.trim();
-  const url=document.getElementById('newUrl').value.trim();
-  const icon=document.getElementById('newIcon').value.trim()||'🔗';
-  if(!name||!url)return;
-  links.push({icon,label:name,url:url.startsWith('http')?url:'https://'+url});
-  ss('hp3_links',JSON.stringify(links));renderLinks();closeModal('link');
-  ['newName','newUrl','newIcon'].forEach(id=>document.getElementById(id).value='');
-  showToast('Link added!');
+
+function deleteShortcut(e, i) {
+  e.preventDefault();
+  e.stopPropagation();
+  state.shortcuts.splice(i, 1);
+  saveState();
+  renderShortcuts();
+}
+function deleteShortcut2(i) {
+  state.shortcuts.splice(i, 1);
+  saveState();
+  renderShortcuts();
 }
 
-/* ═══ TOP SITES ═══ */
-function renderTopSites(){
-  document.getElementById('topSites').innerHTML=topSites.slice(0,8).map((s,i)=>`
-    <a class="ts-item" href="${s.url}">
-      <span class="ts-icon">${s.icon}</span>
-      <span class="ts-lbl">${s.label}</span>
-    </a>`).join('');
+// ===== ADD SHORTCUT =====
+function openAddShortcut() {
+  document.getElementById('sc-name').value = '';
+  document.getElementById('sc-url').value = '';
+  openModal('add-modal');
 }
-function addSite(){
-  const name=document.getElementById('siteName').value.trim();
-  const url=document.getElementById('siteUrl').value.trim();
-  const icon=document.getElementById('siteIcon').value.trim()||'🌐';
-  if(!name||!url)return;
-  topSites.push({icon,label:name,url:url.startsWith('http')?url:'https://'+url});
-  ss('hp3_top',JSON.stringify(topSites));renderTopSites();closeModal('site');
-  ['siteName','siteUrl','siteIcon'].forEach(id=>document.getElementById(id).value='');
-  showToast('Site added!');
+function addShortcut() {
+  const name = document.getElementById('sc-name').value.trim();
+  let url = document.getElementById('sc-url').value.trim();
+  if (!name || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  state.shortcuts.push({ name, url });
+  saveState();
+  renderShortcuts();
+  closeModal('add-modal');
 }
 
-/* ═══ BOOKMARKS ═══ */
-function renderBookmarks(){
-  document.getElementById('bookmarks').innerHTML=bookmarks.map(b=>`<a class="bchip glass" href="${b.url}">${b.icon} ${b.label}</a>`).join('');
+// ===== DEVICE BG UPLOAD =====
+function applyDeviceBg(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    state.bgUrl = dataUrl;
+    state.bgIsLocal = true;
+    document.getElementById('bg').style.backgroundImage = `url('${dataUrl}')`;
+    saveState();
+  };
+  reader.readAsDataURL(file);
 }
 
-/* ═══ NOTES ═══ */
-const NOTE_LABELS=['• 1','• 2','• 3'];
-const notesEl=document.getElementById('notes');
-function renderNoteTabs(){
-  document.getElementById('notesTabs').innerHTML=NOTE_LABELS.map((l,i)=>
-    `<div class="note-tab${i===activeNote?' active':''}" onclick="switchNote(${i})">${l}</div>`).join('');
+// ===== MODALS =====
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openSettings() { 
+  syncSettingsUI();
+  openModal('settings-modal'); 
 }
-function switchNote(i){notePages[activeNote]=notesEl.value;activeNote=i;notesEl.value=notePages[i];renderNoteTabs();updateNotesCount();}
-notesEl.value=notePages[activeNote];renderNoteTabs();
 
-let saveTimer;
-function updateNotesCount(){document.getElementById('notesCount').textContent=notesEl.value.length+' chars';}
-notesEl.addEventListener('input',()=>{
-  notePages[activeNote]=notesEl.value;updateNotesCount();
-  clearTimeout(saveTimer);document.getElementById('notesSave').textContent='saving…';
-  saveTimer=setTimeout(()=>{ss('hp3_notes',JSON.stringify(notePages));document.getElementById('notesSave').textContent='saved ✓';},600);
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
-updateNotesCount();
 
-/* ═══ HABITS ═══ */
-function renderHabits(){
-  document.getElementById('habitDate').textContent=todayStr();
-  const c=document.getElementById('habitList');
-  const done=Object.keys(habitDone).length;
-  document.getElementById('habitStat').textContent=`${done}/${habits.length} habits`;
-  if(!habits.length){c.innerHTML='<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);padding:4px 0;">No habits yet!</div>';return;}
-  c.innerHTML=habits.map((h,i)=>{
-    const isDone=!!habitDone[h.id];
-    return `<div class="habit-item">
-      <div class="habit-chk${isDone?' done':''}" onclick="toggleHabit(${i})">${isDone?'✓':''}</div>
-      <span class="habit-name${isDone?' done':''}">${h.icon} ${h.name}</span>
-      <span class="habit-streak">🔥${h.streak}</span>
-      <button class="habit-del" onclick="rmHabit(${i})">✕</button>
-    </div>`;
-  }).join('');
+// ===== SETTINGS TABS =====
+function switchTab(name) {
+  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.stab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
 }
-function toggleHabit(i){
-  const h=habits[i];
-  if(habitDone[h.id]){delete habitDone[h.id];if(h.streak>0)h.streak--;}
-  else{habitDone[h.id]=true;h.streak=(h.streak||0)+1;}
-  ss('hp3_hdone_'+todayStr(),JSON.stringify(habitDone));
-  ss('hp3_habits',JSON.stringify(habits));renderHabits();
-}
-function rmHabit(i){habits.splice(i,1);ss('hp3_habits',JSON.stringify(habits));renderHabits();showToast('Habit removed.');}
-function addHabit(){
-  const v=document.getElementById('habitInput').value.trim();if(!v)return;
-  habits.push({id:Date.now(),icon:'✅',name:v,streak:0});
-  ss('hp3_habits',JSON.stringify(habits));renderHabits();
-  document.getElementById('habitInput').value='';showToast('Habit added!');
-}
-function addHabitModal(){
-  const name=document.getElementById('habitModalName').value.trim();if(!name)return;
-  const icon=document.getElementById('habitModalIcon').value.trim()||'✅';
-  habits.push({id:Date.now(),icon,name,streak:0});
-  ss('hp3_habits',JSON.stringify(habits));renderHabits();closeModal('habit');
-  ['habitModalName','habitModalIcon'].forEach(id=>document.getElementById(id).value='');
-  showToast('Habit added!');
-}
-document.getElementById('habitInput').addEventListener('keydown',e=>{if(e.key==='Enter')addHabit();});
-renderHabits();
 
-/* ═══ WEATHER ═══ */
-const WX_ICONS={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'🌧',95:'⛈',96:'⛈',99:'⛈'};
-const WX_DESC={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-async function fetchWeather(){
-  const city=document.getElementById('wxCityInput').value.trim();if(!city)return;
-  cfg.wxCity=city;saveCfg();
-  document.getElementById('wxCity').textContent='Loading…';
-  try{
-    const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`).then(r=>r.json());
-    if(!geo.results?.length){document.getElementById('wxCity').textContent='City not found';return;}
-    const{latitude,longitude,name}=geo.results[0];
-    const wx=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=apparent_temperature&timezone=auto&forecast_days=1`).then(r=>r.json());
-    const{temperature,weathercode,windspeed}=wx.current_weather;
-    const hr=new Date().getHours();
-    const feels=wx.hourly?.apparent_temperature?.[hr];
-    document.getElementById('wxIcon').textContent=WX_ICONS[weathercode]||'🌡';
-    document.getElementById('wxTemp').textContent=Math.round(temperature)+'°C';
-    document.getElementById('wxCity').textContent=name;
-    document.getElementById('wxDesc').textContent=WX_DESC[weathercode]||'';
-    document.getElementById('wxFeels').textContent=feels!=null?`Feels ${Math.round(feels)}°C · Wind ${windspeed}km/h`:`Wind ${windspeed}km/h`;
-    document.getElementById('wxCard').onclick=null;
-    showToast('Weather updated!');
-  }catch(e){document.getElementById('wxCity').textContent='Error fetching';showToast('Weather error.');}
+// ===== THEME =====
+function setTheme(t) {
+  state.theme = t;
+  document.body.classList.toggle('light-theme', t === 'light');
+  document.getElementById('theme-dark-btn').classList.toggle('active', t === 'dark');
+  document.getElementById('theme-light-btn').classList.toggle('active', t === 'light');
+  saveState();
 }
-if(cfg.wxCity){document.getElementById('wxCityInput').value=cfg.wxCity;fetchWeather();}
 
-/* ═══ POMODORO ═══ */
-let pomoMode='focus',pomoRunning=false,pomoTimer=null;
-let pomoSecsLeft=cfg.pomoF*60,pomoTotalSecs=cfg.pomoF*60;
-let pomoSessions=parseInt(ls('hp3_pomo_sess')||'0');
-const CIRC=2*Math.PI*32;
+// ===== ICON SIZE =====
+function updateIconSize(v) {
+  state.iconSize = parseInt(v);
+  document.documentElement.style.setProperty('--icon-size', v+'px');
+  document.getElementById('icon-size-val').textContent = v+'px';
+  saveState();
+}
 
-function pomoDur(m){return m==='focus'?cfg.pomoF:m==='short'?cfg.pomoS:cfg.pomoL;}
-function setPomoMode(m){
-  if(pomoRunning)return;
-  pomoMode=m;
-  ['Focus','Short','Long'].forEach(t=>document.getElementById('pomoTab'+t).classList.remove('active'));
-  document.getElementById('pomoTab'+m.charAt(0).toUpperCase()+m.slice(1)).classList.add('active');
-  pomoSecsLeft=pomoDur(m)*60;pomoTotalSecs=pomoSecsLeft;
-  renderPomo();document.getElementById('pomoStatus').textContent='Paused';
+// ===== SEARCH WIDTH =====
+function updateSearchWidth(v) {
+  state.searchWidth = parseInt(v);
+  document.documentElement.style.setProperty('--searchbar-width', v+'px');
+  document.getElementById('sb-width-val').textContent = v+'px';
+  saveState();
 }
-function renderPomo(){
-  const mi=Math.floor(pomoSecsLeft/60),se=pomoSecsLeft%60;
-  document.getElementById('pomoTime').textContent=`${String(mi).padStart(2,'0')}:${String(se).padStart(2,'0')}`;
-  const pct=pomoSecsLeft/pomoTotalSecs;
-  document.getElementById('pomoArc').style.strokeDashoffset=CIRC*(1-pct);
-  document.getElementById('pomoArc').style.stroke=pomoMode==='focus'?'var(--accent)':pomoMode==='short'?'var(--accent2)':'var(--accent3)';
-  document.getElementById('pomoSessions').textContent=`Sessions: ${pomoSessions}`;
-  document.getElementById('pomoStat').textContent=`${pomoSessions} sessions`;
+
+// ===== BACKGROUND =====
+function applyBgUrl() {
+  const url = document.getElementById('bg-url-input').value.trim();
+  if (!url) return;
+  state.bgUrl = url;
+  document.getElementById('bg').style.backgroundImage = `url('${url}')`;
+  saveState();
 }
-function togglePomo(){
-  if(pomoRunning){
-    clearInterval(pomoTimer);pomoRunning=false;
-    document.getElementById('pomoStartBtn').textContent='▶ Start';
-    document.getElementById('pomoStatus').textContent='Paused';
-  }else{
-    pomoRunning=true;
-    document.getElementById('pomoStartBtn').textContent='⏸ Pause';
-    document.getElementById('pomoStatus').textContent=pomoMode==='focus'?'Focusing…':'On break';
-    pomoTimer=setInterval(()=>{
-      pomoSecsLeft--;renderPomo();
-      if(pomoSecsLeft<=0){
-        clearInterval(pomoTimer);pomoRunning=false;
-        document.getElementById('pomoStartBtn').textContent='▶ Start';
-        if(pomoMode==='focus'){pomoSessions++;ss('hp3_pomo_sess',pomoSessions);}
-        showToast(pomoMode==='focus'?'Session done! 🎉':'Break over! Back to work.');
-        try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(880,ctx.currentTime);g.gain.setValueAtTime(0.28,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+1.2);o.start();o.stop(ctx.currentTime+1.2);}catch(e){}
-        const next=pomoMode==='focus'?(pomoSessions%4===0?'long':'short'):'focus';
-        setPomoMode(next);
-      }
-    },1000);
+function resetBg() {
+  state.bgUrl = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80';
+  state.bgIsLocal = false;
+  document.getElementById('bg').style.backgroundImage = `url('${state.bgUrl}')`;
+  document.getElementById('bg-url-input').value = '';
+  document.getElementById('bg-file-input').value = '';
+  saveState();
+}
+function updateOpacity(v) {
+  state.bgOpacity = parseFloat(v);
+  document.documentElement.style.setProperty('--bg-opacity', v);
+  document.getElementById('opacity-val').textContent = Math.round(v*100)+'%';
+  saveState();
+}
+
+// ===== POSITION =====
+function setPosition(pos) {
+  state.position = pos;
+  const bar = document.getElementById('bottom-bar');
+  if (pos === 'top') {
+    document.documentElement.style.setProperty('--bar-top', '28px');
+    document.documentElement.style.setProperty('--bar-bottom', 'auto');
+    bar.style.top = '28px';
+    bar.style.bottom = 'auto';
+  } else {
+    document.documentElement.style.setProperty('--bar-top', 'auto');
+    document.documentElement.style.setProperty('--bar-bottom', '36px');
+    bar.style.top = 'auto';
+    bar.style.bottom = '36px';
   }
-}
-function resetPomo(){clearInterval(pomoTimer);pomoRunning=false;document.getElementById('pomoStartBtn').textContent='▶ Start';document.getElementById('pomoStatus').textContent='Paused';setPomoMode(pomoMode);}
-function skipPomo(){clearInterval(pomoTimer);pomoRunning=false;document.getElementById('pomoStartBtn').textContent='▶ Start';const n=pomoMode==='focus'?'short':'focus';setPomoMode(n);}
-renderPomo();
-
-/* ═══ COUNTDOWN ═══ */
-let cdownInterval;
-function renderCountdown(){
-  if(!cfg.countdown)return;
-  const{label,ts}=cfg.countdown;
-  document.getElementById('cdownLabel').textContent='Until '+label;
-  function tick(){
-    const diff=ts-Date.now();
-    if(diff<=0){clearInterval(cdownInterval);['cdownD','cdownH','cdownM','cdownS'].forEach(id=>document.getElementById(id).textContent='0');return;}
-    const d=Math.floor(diff/86400000);
-    const h=Math.floor((diff%86400000)/3600000);
-    const m=Math.floor((diff%3600000)/60000);
-    const s=Math.floor((diff%60000)/1000);
-    const vals={d,h:String(h).padStart(2,'0'),m:String(m).padStart(2,'0'),s:String(s).padStart(2,'0')};
-    ['d','h','m','s'].forEach(k=>{
-      const el=document.getElementById('cdown'+k.toUpperCase());
-      if(el.textContent!==String(vals[k])){
-        el.textContent=vals[k];el.classList.remove('tick');void el.offsetWidth;el.classList.add('tick');
-      }
-    });
-  }
-  clearInterval(cdownInterval);tick();cdownInterval=setInterval(tick,1000);
-}
-function setCountdown(){
-  const name=document.getElementById('cdownName').value.trim();
-  const dateStr=document.getElementById('cdownDate').value.trim();
-  if(!name||!dateStr)return;
-  const ts=new Date(dateStr).getTime();
-  if(isNaN(ts)){showToast('Invalid date');return;}
-  cfg.countdown={label:name,ts};saveCfg();renderCountdown();closeModal('countdown');showToast('Countdown set!');
-}
-if(cfg.countdown) renderCountdown();
-
-/* ═══ FOCUS MODE ═══ */
-let focusOpen=false;
-function toggleFocus(){
-  focusOpen=!focusOpen;
-  document.getElementById('focusMode').classList.toggle('open',focusOpen);
-  if(focusOpen) showQuote();
+  document.getElementById('pos-bottom-btn').classList.toggle('active', pos === 'bottom');
+  document.getElementById('pos-top-btn').classList.toggle('active', pos === 'top');
+  saveState();
 }
 
-/* ═══ MODALS ═══ */
-function openModal(t){document.getElementById(t+'Modal').classList.add('open');}
-function closeModal(t){document.getElementById(t+'Modal').classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
-
-/* ═══ KEYBOARD ═══ */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));closeSettings();if(focusOpen)toggleFocus();}
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('searchInput').focus();}
-  if((e.metaKey||e.ctrlKey)&&e.key===','){e.preventDefault();openSettings();}
-  if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.key==='F'){e.preventDefault();toggleFocus();}
-});
-document.getElementById('searchInput').focus();
-
-/* ═══ PARTICLES ═══ */
-function initParticles(count){
-  const c=document.getElementById('particles');if(!c)return;c.innerHTML='';
-  count=Math.max(0,Math.min(200,Math.floor(count)));
-  for(let i=0;i<count;i++){
-    const p=document.createElement('div');p.className='pt';
-    const sz=Math.random()*3+1;
-    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${10+Math.random()*16}s;animation-delay:${Math.random()*22}s;`;
-    c.appendChild(p);
-  }
+// ===== ORDER =====
+function applyOrder(val) {
+  state.order = val;
+  const map = { 'time-search-icons': [0,1,2], 'search-time-icons': [1,0,2], 'icons-search-time': [2,1,0], 'time-icons-search': [0,2,1] };
+  const orders = map[val] || [0,1,2];
+  document.getElementById('time-block').style.order = orders[0];
+  document.getElementById('search-wrap').style.order = orders[1];
+  document.getElementById('shortcuts-wrap').style.order = orders[2];
+  saveState();
 }
 
-/* ═══ INIT ═══ */
-renderLinks();
-renderTopSites();
-renderBookmarks();
-applyAll();
-setGreeting();
-restartQuotes();
+// ===== SYNC SETTINGS UI =====
+function syncSettingsUI() {
+  document.getElementById('icon-size-range').value = state.iconSize;
+  document.getElementById('icon-size-val').textContent = state.iconSize+'px';
+  document.getElementById('sb-width-range').value = state.searchWidth;
+  document.getElementById('sb-width-val').textContent = state.searchWidth+'px';
+  document.getElementById('opacity-range').value = state.bgOpacity;
+  document.getElementById('opacity-val').textContent = Math.round(state.bgOpacity*100)+'%';
+  document.getElementById('bg-url-input').value = (!state.bgIsLocal && state.bgUrl !== 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') ? state.bgUrl : '';
+  document.getElementById('order-select').value = state.order;
+  renderShortcutList();
+}
+
+// ===== APPLY SAVED STATE =====
+function applyState() {
+  if (state.theme === 'light') document.body.classList.add('light-theme');
+  document.documentElement.style.setProperty('--icon-size', state.iconSize+'px');
+  document.documentElement.style.setProperty('--searchbar-width', state.searchWidth+'px');
+  document.documentElement.style.setProperty('--bg-opacity', state.bgOpacity);
+  document.getElementById('bg').style.backgroundImage = `url('${state.bgUrl}')`;
+  setPosition(state.position);
+  applyOrder(state.order);
+  // Theme buttons
+  document.getElementById('theme-dark-btn').classList.toggle('active', state.theme === 'dark');
+  document.getElementById('theme-light-btn').classList.toggle('active', state.theme === 'light');
+}
+
+// ===== INIT =====
+loadState();
+applyState();
+renderShortcuts();
 </script>
 </body>
 </html>
